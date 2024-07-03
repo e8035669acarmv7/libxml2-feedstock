@@ -1,4 +1,4 @@
-{% set version = "2.11.5" %}
+{% set version = "2.12.7" %}
 
 package:
   name: libxml2
@@ -6,21 +6,24 @@ package:
 
 source:
   url: https://gitlab.gnome.org/GNOME/libxml2/-/archive/v{{ version }}/libxml2-v{{ version }}.tar.gz
-  sha256: 9d9c1026c818c1dadc81d54cc2839cd69c632590f3dcd9b2dc9ef4a136295af1
+  sha256: a7c1277f4e859883ff3aaa09a545561b7515e078a97eb240bb92bf5a03ae03fc
   patches:
     - 0002-Make-and-install-a-pkg-config-file-on-Windows.patch
 
 build:
   number: 1
   run_exports:
-    # remove symbols at minor versions.
+    # remove symbols at minor versions according to
     #    https://abi-laboratory.pro/tracker/timeline/libxml2/
-    - {{ pin_subpackage('libxml2', max_pin='x.x') }}
+    # but the analysis is incorrect. abi-laboratory has a hard
+    # time with shared libraries with versioned objects.
+    - {{ pin_subpackage('libxml2', max_pin='x') }}
 
 requirements:
   build:
     - libtool  # [unix]
     - {{ compiler('c') }}
+    - {{ stdlib("c") }}
     - autoconf  # [not win]
     - automake  # [not win]
     - libtool  # [not win]
@@ -55,6 +58,7 @@ about:
 
 extra:
   recipe-maintainers:
+    - isuruf
     - ocefpaf
     - jakirkham
     - gillins
